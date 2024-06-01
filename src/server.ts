@@ -20,12 +20,14 @@ app.use(
 app.use(express.static("front/dist"));
 app.use(bodyParser.json());
 
-app.get("/", (req, res) => {
-  res.sendFile("index.html", { root: "front/dist" });
-});
 
 app.get("/participants", middleware, getParticipants);
 app.post("/participants", middleware, createOrUpdateParticipant);
+
+app.get("/*", (req, res) => {
+  res.sendFile("index.html", { root: "front/dist" });
+});
+
 
 const s3 = new S3Client({
   region: "us-east-1",
