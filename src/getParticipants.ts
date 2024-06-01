@@ -16,7 +16,11 @@ export const getParticipants = async (req: Request, res: Response) => {
       }),
     },
     include: {
-      Groups: true,
+      ParticipantsGroup: {
+        include: {
+          group: true,
+        },
+      },
     },
     skip: page * 10,
     take: 10,
@@ -42,10 +46,10 @@ export const getParticipants = async (req: Request, res: Response) => {
 
   res.send({
     participants: participants.map((p) => {
-      const { Groups, ...rest } = p;
+      const { ParticipantsGroup, ...rest } = p;
       return {
         ...rest,
-        group: Groups.length ? Groups[0] : null,
+        group: ParticipantsGroup[0]?.group,
       };
     }),
     pages,
