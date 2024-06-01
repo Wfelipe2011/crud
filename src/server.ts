@@ -46,11 +46,12 @@ const upload = multer({
       cb(null, { fieldName: file.fieldname });
     },
     key: async function (req: Request, file, cb) {
+      console.log({file})
       if (!req.params["id"]) {
         cb(new Error("No id provided"));
         return;
       }
-      const key = req.params["id"] + "." + file.originalname.split(".").pop();
+      const key = req.params["id"] + ".png";
       const urlBase = `https://participants-photo.s3.amazonaws.com/${key}`;
       await prisma.participants
         .update({
