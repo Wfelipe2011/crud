@@ -10,6 +10,7 @@ export class ParticipantUtils {
 export const createOrUpdateParticipant = async (req: Request, res: Response) => {
   try {
     const body = req.body;
+    let participantId = body?.id;
     if (!body.groupId) {
       res.status(400).send({ message: "groupId is required" });
     }
@@ -37,6 +38,7 @@ export const createOrUpdateParticipant = async (req: Request, res: Response) => 
       } else {
         const { groupId, ...data } = body;
         const participant = await txt.participants.create({ data });
+        participantId = participant.id;
         await txt.participantsGroups.create({
           data: {
             participantId: participant.id,
@@ -46,7 +48,7 @@ export const createOrUpdateParticipant = async (req: Request, res: Response) => 
       }
     });
 
-    res.send({ message: `Participant ${body.id ? "updated" : "created"} successfully` });
+    res.send({ message: `Participant ${body.id ? "updated" : "created"} successfully`, participant: { id: participantId } });
   } catch (error) {
     console.log(error.message);
     res.status(500).send({ message: "Internal server error" });
