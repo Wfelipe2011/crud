@@ -2,9 +2,12 @@
   "name": "crud",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/server.js",
   "scripts": {
-    "start": "tsx --watch src/server.ts",
+    "build": "tsc",
+    "prebuild": "rm -rf dist",
+    "start:dev": "tsx --watch src/server.ts",
+    "start": "node dist/server.js",
     "postinstall": "npx prisma generate"
   },
   "keywords": [],
