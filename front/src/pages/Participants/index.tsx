@@ -56,7 +56,6 @@ export function Participants() {
   const [participant, setParticipant] = useState<Participant | null>(null);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [group, setGroup] = useState<Group[]>([]);
-  const [filter, setFilter] = useState<string>("");
   const [page, setPage] = useState<Page>({
     total: 0,
     current: 1,
@@ -65,11 +64,11 @@ export function Participants() {
   });
 
   const getParticipants = useCallback(
-    async (currentPage = page.current) => {
+    async (currentPage = page.current, search?: string) => {
       setLoading(true);
       const { data } = await http.get<GetMethodResponse>("/participants", {
         params: {
-          ...(filter && { filter: filter }),
+          ...(search && { filter: search }),
           page: currentPage,
         },
       });
@@ -80,29 +79,16 @@ export function Participants() {
       setGroup(groups);
       setLoading(false);
     },
-    [http, filter]
+    [http]
   );
 
-  const debounce = (fn: any, time: number) => {
-    let timeout = 0;
-    return function (...args: any) {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => fn(...args), time);
-    };
+  useEffect(() => {
+    getParticipants();
+  }, [getParticipants]);
+
+  const handleFilter = async () => {
+    await getParticipants();
   };
-
-  const debouncedGetParticipants = useCallback(
-    debounce(getParticipants, 2000),
-    [getParticipants]
-  );
-
-  useEffect(() => {
-    debouncedGetParticipants();
-  }, [debouncedGetParticipants]);
-
-  useEffect(() => {
-    setPage({ ...page, current: 1 });
-  }, [filter]);
 
   const showThisParticipant = (participantSelected: Participant) => {
     if (
@@ -145,10 +131,9 @@ export function Participants() {
           page={page}
           setPage={setPage}
           loading={loading}
-          filter={filter}
-          setFilter={setFilter}
           showThisParticipant={showThisParticipant}
           getParticipants={getParticipants}
+          handleFilter={handleFilter}
         />
         <Form
           participant={participant}
@@ -169,10 +154,9 @@ interface ListParticipantsProps {
   page: Page;
   setPage: Dispatch<SetStateAction<Page>>;
   loading: boolean;
-  filter: string;
-  setFilter: Dispatch<SetStateAction<string>>;
   showThisParticipant: (p: Participant) => void;
   getParticipants: (page?: number) => void;
+  handleFilter: () => void;
 }
 
 function ListParticipants({
@@ -181,25 +165,40 @@ function ListParticipants({
   page,
   setPage,
   loading,
-  filter,
-  setFilter,
   showThisParticipant,
   getParticipants,
 }: ListParticipantsProps) {
-  if (loading) return <ListParticipantsSkeleton />;
+  const [filter, setFilter] = useState<string>("");
 
+  useEffect(() => {
+    setPage({ ...page, current: 1 });
+  }, [filter]);
+
+  if (loading) return <ListParticipantsSkeleton />;
   return (
     <>
       <div className="w-1/2 h-full flex flex-col gap-4">
-        <Input
-          type="search"
-          placeholder="Nome ou Ponto"
-          label="Filtrar"
-          crossOrigin="true"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          autoFocus
-        />
+        <div className="flex items-center gap-4 w-full">
+          <Input
+            type="search"
+            placeholder="Nome ou Ponto"
+            label="Filtrar"
+            crossOrigin="true"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            autoFocus
+            onKeyUp={(e) => {
+              if (e.key === "Enter") getParticipants(page.current, filter);
+            }}
+          />
+          <Button
+            className="bg-primary-500"
+            onClick={() => getParticipants(page.current, filter)}
+            disabled={loading}
+          >
+            Buscar
+          </Button>
+        </div>
         <div className="flex flex-col gap-4 h-full overflow-y-auto transition-all ease-in-out duration-300">
           <div className="flex gap-2 p-2 bg-gray-50 rounded-md">
             <div className="w-1/12">Foto</div>
