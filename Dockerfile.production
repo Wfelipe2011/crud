@@ -16,6 +16,8 @@ RUN npx prisma generate
 # Execute o comando de build
 RUN npm run build
 
+RUN cd front && npm ci && npm run build && cd ..
+
 # Use uma imagem base mais leve para executar o aplicativo
 FROM node:20-alpine
 WORKDIR /app
@@ -23,6 +25,7 @@ WORKDIR /app
 # Copy only necessary files from the builder stage
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
+COPY --from=builder /app/front/dist ./front/dist
 COPY package*.json ./
 
 # Install production dependencies (excluding devDependencies)
