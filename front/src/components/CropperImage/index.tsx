@@ -27,6 +27,9 @@ export function UploadImage({
     if (img) {
       setImagemOfClient(img);
       setViewImage(img);
+    } else {
+      setImagemOfClient(image_placeholder);
+      setViewImage(image_placeholder);
     }
   }, [img]);
 
