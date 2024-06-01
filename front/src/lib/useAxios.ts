@@ -1,7 +1,8 @@
 import { useCookies } from ".";
-import { http } from "../infra";
+import { http as httpCrud, httpLogin } from "../infra";
 
-export const useHttp = () => {
+export const useHttp = (type: 'login' | 'crud' = 'crud') => {
+  const http = type === 'login' ? httpLogin : httpCrud;
   const cookie = useCookies();
 
   http.interceptors.request.use((config) => {

@@ -11,7 +11,7 @@ export function Login() {
     phone: "",
     password: "",
   });
-  const http = useHttp();
+  const http = useHttp('login');
   const cookies = useCookies();
   const navigate = useNavigate();
 
