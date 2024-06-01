@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "lib": ["ES2022"],
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "target": "ES2022",
+    "rootDir": "./",
+    "baseUrl": "./",
+    "strict": false
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/scripts/**/*.ts"]
+}
