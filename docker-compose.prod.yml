@@ -12,4 +12,6 @@ services:
         limits:
           cpus: "0.25"
           memory: 512M
+    env_file:
+      - stack.env
 
