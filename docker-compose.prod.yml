@@ -5,7 +5,7 @@ services:
     image: wfelipe2011/tpe-crud-prod:master
     restart: unless-stopped
     ports:
-      - "5000:3000"
+      - "4578:3000"
     deploy:
       replicas: 1
       resources:
