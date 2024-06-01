@@ -1,5 +1,5 @@
 import { Button, Input } from "@material-tailwind/react";
-import {
+import React, {
   Dispatch,
   SetStateAction,
   useCallback,
@@ -155,7 +155,7 @@ interface ListParticipantsProps {
   setPage: Dispatch<SetStateAction<Page>>;
   loading: boolean;
   showThisParticipant: (p: Participant) => void;
-  getParticipants: (page?: number) => void;
+  getParticipants: (page?: number, filter?: string) => void;
   handleFilter: () => void;
 }
 
@@ -219,7 +219,10 @@ function ListParticipants({
             >
               <div className="w-1/12">
                 <img
-                  src={participantInShow.profile_photo}
+                  key={participantInShow.profile_photo}
+                  src={`${
+                    participantInShow.profile_photo
+                  }?dummy=${Math.random()}`}
                   alt="Foto"
                   className="w-10 rounded-full bg-cover bg-primary-100"
                 />
@@ -452,6 +455,8 @@ function Form({
         "Content-Type": "multipart/form-data",
       },
     });
+
+    getParticipants();
   };
 
   const removeImage = () => {
