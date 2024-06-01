@@ -1,0 +1,92 @@
+.input-type-file {
+  input[type="file"] {
+    display: none;
+  }
+}
+
+.modal-image-client {
+  min-width: 40vw;
+}
+
+.image-contrast {
+  & svg {
+    & path {
+      fill: #fefefe;
+    }
+  }
+}
+.label-input-file {
+  height: 45px;
+  align-self: end;
+  padding: 1rem;
+  text-align: center;
+  min-width: 200px;
+}
+
+.button-crop-image {
+  gap: 10px;
+  padding: 1rem;
+  border-radius: 5px;
+  display: flex;
+  justify-content: center;
+  & svg {
+    width: 30px;
+  }
+}
+
+.button-remove-image:hover {
+  background-color: var(--secondary);
+  color: #fefefe;
+}
+
+.button-remove-image {
+  background-color: #fefefe;
+  color: var(--secondary);
+  border: 2px solid var(--secondary) !important;
+  border-radius: 5px;
+  width: 100px;
+  padding: 7px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.4s, color 0.4s;
+  & svg {
+    width: 30px !important;
+  }
+}
+
+.button-cropper-save {
+  color: #fefefe !important;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500px;
+  font-size: 1.4rem;
+  width: 200px;
+  padding: 7px;
+  height: 45;
+  border-radius: 5px;
+  justify-content: center;
+  align-items: center;
+}
+
+.button-cropper-save-blocked {
+  background-color: gray;
+  color: #fefefe;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500px;
+  font-size: 1.4rem;
+  width: 200px;
+  padding: 7px;
+  height: 45;
+  border-radius: 5px;
+  justify-content: center;
+  align-items: center;
+  & svg {
+    color: #fefefe;
+  }
+}
+
+.button-cropper-save-blocked:hover {
+  background-color: dimgray;
+  transition: background-color 0.6s;
+}

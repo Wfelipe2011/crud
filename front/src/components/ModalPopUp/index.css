@@ -1,0 +1,36 @@
+.title-modal {
+  font-size: 1.7rem;
+}
+.modalPopUp-Content {
+  top: 25%;
+  left: 50%;
+  min-width: 50vw;
+  min-height: 40vh;
+  transform: translateX(-50%);
+  background-color: var(--white);
+  padding: 1rem 2rem;
+}
+
+@media (max-width: 500px) {
+  .modalPopUp-Content {
+    max-width: 100vw;
+    min-width: 95vw;
+    top: 20%;
+    padding: 0px;
+  }
+}
+
+.iconX {
+  align-self: flex-end;
+}
+
+.spinnerComponent {
+  margin-top: 8vh;
+  width: 5vw;
+  height: 5vw;
+}
+
+.modalPopUpBodyContainer,
+.modalPopUpHeaderContainer > .box-form {
+  box-shadow: none;
+}
