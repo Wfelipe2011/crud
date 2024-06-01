@@ -118,7 +118,16 @@ export function Participants() {
         profile_photo: "",
         profile: "",
         computed: "",
-        group: null,
+        group: {
+          id: "",
+          name: "",
+          config_max: 0,
+          config_min: 0,
+          config_start_hour: "",
+          config_end_hour: "",
+          config_weekday: "",
+          coordinatorId: "",
+        },
         sex: "",
       });
       return;
@@ -368,12 +377,25 @@ function Form({
 
       const { group: _, ...participantWithoutGroup } = participant;
 
-      await http.post<Participant>("/participants", {
-        ...participantWithoutGroup,
-        cpf: participantWithoutGroup.cpf.replace(/\D/g, "").trim(),
-        phone: participantWithoutGroup.phone.replace(/\D/g, "").trim(),
-        ...(groupId && { groupId }),
-      });
+      const { data } = await http.post<{ participant: Participant }>(
+        "/participants",
+        {
+          ...participantWithoutGroup,
+          cpf: participantWithoutGroup.cpf.replace(/\D/g, "").trim(),
+          phone: participantWithoutGroup.phone.replace(/\D/g, "").trim(),
+          ...(groupId && { groupId }),
+        }
+      );
+      toast.success(
+        `Participante adicionado com sucesso${
+          participant?.id ? "" : ", agora adicione a foto"
+        }`
+      );
+      if (!participant.id) {
+        setParticipant(
+          (old) => ({ ...old, id: data.participant.id } as Participant)
+        );
+      }
       // setParticipant({
       //   id: "",
       //   name: "",
@@ -412,6 +434,8 @@ function Form({
   };
 
   const updateGenderForm = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    console.log("value", e.target.value);
+    console.log("id", e.target.id);
     setParticipant(
       (old) =>
         ({
@@ -446,14 +470,62 @@ function Form({
             {participant?.id ? "Atualizar" : "Adicionar um novo"} participante{" "}
             {participant?.name && `(${participant?.name.trim()})`}
           </p>
-          <Button
-            type="submit"
-            className="bg-primary-500"
-            placeholder="Adicionar"
-            disabled={loading}
-          >
-            {participant?.id ? "Atualizar" : "Adicionar"}
-          </Button>
+
+          <div className="flex items-center gap-4">
+            <Button
+              type="button"
+              onClick={() => {
+                setParticipant({
+                  id: "",
+                  name: "",
+                  cpf: "",
+                  email: "",
+                  phone: "",
+                  profile_photo: "",
+                  profile: "",
+                  computed: "",
+                  group: {
+                    id: "",
+                    name: "",
+                    config_max: 0,
+                    config_min: 0,
+                    config_start_hour: "",
+                    config_end_hour: "",
+                    config_weekday: "",
+                    coordinatorId: "",
+                  },
+                  sex: "",
+                });
+              }}
+              className="bg-white border border-primary-500 text-primary-500"
+              placeholder="Limpar"
+              disabled={
+                loading ||
+                !participant ||
+                Object.keys(participant).every((key) => {
+                  if (key === "group") {
+                    if (!participant.group) return false;
+                    return Object.keys(participant.group).every(
+                      (key) =>
+                        participant.group &&
+                        !participant.group[key as keyof Group]
+                    );
+                  }
+                  return !participant[key as keyof Participant];
+                })
+              }
+            >
+              Limpar
+            </Button>
+            <Button
+              type="submit"
+              className="bg-primary-500"
+              placeholder="Adicionar"
+              disabled={loading}
+            >
+              {participant?.id ? "Atualizar" : "Adicionar"}
+            </Button>
+          </div>
         </div>
         <div className="h-full wrap flex-wrap flex space-y-2">
           <div
