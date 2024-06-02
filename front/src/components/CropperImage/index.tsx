@@ -6,6 +6,7 @@ import toast, { Toaster } from "react-hot-toast";
 import "react-image-crop/dist/ReactCrop.css";
 import "./index.css";
 import { ImageIcon, SaveIcon, TrashIcon } from "lucide-react";
+import React from "react";
 
 export function UploadImage({
   img = image_placeholder,
@@ -31,6 +32,11 @@ export function UploadImage({
       setImagemOfClient(image_placeholder);
       setViewImage(image_placeholder);
     }
+    setSrc("");
+    setImage(null);
+    setResult(null);
+    setCrop({ aspect: 9 / 9 });
+    setClickDeleteImage(false);
   }, [img]);
 
   const handleFileChange = (e: any) => {
@@ -147,7 +153,7 @@ export function UploadImage({
         {imagemOfClient && !src ? (
           <div className="flex justify-center">
             <img
-              src={imagemOfClient}
+              src={imagemOfClient + `?stubby=${Math.random()}`}
               className=""
               width="150px"
               height="150px"
@@ -199,7 +205,7 @@ export function UploadImage({
         ) : (
           <div className="flex justify-center">
             <img
-              src={image_placeholder}
+              src={image_placeholder + `?stubby=${Math.random()}`}
               width="150px"
               height="150px"
               className="image-placeholder-modal"
