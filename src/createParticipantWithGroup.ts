@@ -36,7 +36,7 @@ export const createParticipantWithGroup = async (req: Request, res: Response) =>
         data: {
           name: data.name,
           email: data.email,
-          phone: data.phone,
+          phone: String(data.phone),
           sex: ParticipantSex.FEMALE === data.gender.toUpperCase() ? ParticipantSex.FEMALE : ParticipantSex.MALE,
           computed: data.computed,
           profile: ParticipantProfile.PARTICIPANT,
