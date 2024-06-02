@@ -205,9 +205,9 @@ function ListParticipants({
             <div className="w-3/12 truncate" title="Nome">
               Nome
             </div>
-            <div className="w-2/12 text-center">Gênero</div>
+            <div className="w-1/12 text-center">Gênero</div>
             <div className="w-3/12 text-center">Telefone</div>
-            <div className="w-2/12 text-center">Grupo</div>
+            <div className="w-3/12 text-center">Grupo</div>
             <div className="w-1/12"></div>
           </div>
           {participants?.map((participantInShow) => (
@@ -235,7 +235,7 @@ function ListParticipants({
                 {participantInShow.name}
               </div>
               <div
-                className={`w-2/12 flex items-center text-center justify-center ${
+                className={`w-1/12 flex items-center text-center justify-center ${
                   participantInShow?.sex === "MALE"
                     ? "text-blue-500"
                     : "text-pink-500"
@@ -246,7 +246,7 @@ function ListParticipants({
               <div className="w-3/12 flex items-center justify-center text-center">
                 {formatPhone(participantInShow.phone)}
               </div>
-              <div className="w-2/12 flex items-center text-center justify-center">
+              <div className="w-3/12 flex items-center text-center justify-center">
                 {participantInShow?.group?.name}
               </div>
               <div className="w-1/12 flex items-center justify-center">
@@ -305,9 +305,9 @@ function ListParticipantsSkeleton() {
         <div className="flex gap-2 p-2 bg-gray-50 rounded-md">
           <div className="w-1/12">Foto</div>
           <div className="w-3/12 truncate">Nome</div>
-          <div className="w-2/12 text-center">Gênero</div>
+          <div className="w-1/12 text-center">Gênero</div>
           <div className="w-3/12 text-center">Telefone</div>
-          <div className="w-2/12 text-center">Grupo</div>
+          <div className="w-3/12 text-center">Grupo</div>
           <div className="w-1/12"></div>
         </div>
         {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((_, index) => (
@@ -326,7 +326,7 @@ function ListParticipantsSkeleton() {
               }ms]`}
             ></div>
             <div
-              className={`w-2/12 bg-primary-100 animate-pulse delay-[${
+              className={`w-1/12 bg-primary-100 animate-pulse delay-[${
                 3 * _ + 150
               }ms]`}
             ></div>
@@ -336,7 +336,7 @@ function ListParticipantsSkeleton() {
               }ms]`}
             ></div>
             <div
-              className={`w-2/12 bg-primary-100 animate-pulse delay-[${
+              className={`w-3/12 bg-primary-100 animate-pulse delay-[${
                 4 * _ + 250
               }ms]`}
             ></div>
