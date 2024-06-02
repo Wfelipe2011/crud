@@ -399,8 +399,8 @@ function Form({
         "/participants",
         {
           ...participantWithoutGroup,
-          cpf: participantWithoutGroup.cpf.replace(/\D/g, "").trim(),
-          phone: participantWithoutGroup.phone.replace(/\D/g, "").trim(),
+          cpf: participantWithoutGroup?.cpf?.replace(/\D/g, "").trim(),
+          phone: participantWithoutGroup?.phone?.replace(/\D/g, "").trim(),
           ...(groupId && { groupId }),
         }
       );
@@ -477,6 +477,7 @@ function Form({
     setParticipant((old) => ({ ...old, profile_photo: "" } as Participant));
   };
 
+  console.log("participant", participant);
   return (
     <>
       <form
