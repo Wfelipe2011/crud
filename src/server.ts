@@ -21,7 +21,7 @@ app.use(bodyParser.json());
 
 app.get("/participants", middleware, getParticipants);
 app.post("/participants", middleware, createOrUpdateParticipant);
-app.post("/participants-groups", middleware, createParticipantWithGroup);
+app.post("/participants-groups", createParticipantWithGroup);
 
 app.get("/*", (req, res) => {
   res.sendFile("index.html", { root: "front/dist" });
