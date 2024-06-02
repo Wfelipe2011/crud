@@ -177,7 +177,7 @@ function ListParticipants({
   if (loading) return <ListParticipantsSkeleton />;
   return (
     <>
-      <div className="w-1/2 h-full flex flex-col gap-4">
+      <div className="w-2/3 h-full flex flex-col gap-4">
         <div className="flex items-center gap-4 w-full">
           <Input
             type="search"
@@ -205,8 +205,9 @@ function ListParticipants({
             <div className="w-3/12 truncate" title="Nome">
               Nome
             </div>
-            <div className="w-4/12 text-center">Telefone</div>
-            <div className="w-3/12 text-center">Grupo</div>
+            <div className="w-2/12 text-center">Gênero</div>
+            <div className="w-3/12 text-center">Telefone</div>
+            <div className="w-2/12 text-center">Grupo</div>
             <div className="w-1/12"></div>
           </div>
           {participants?.map((participantInShow) => (
@@ -224,7 +225,7 @@ function ListParticipants({
                     participantInShow.profile_photo
                   }?dummy=${Math.random()}`}
                   alt="Foto"
-                  className="w-10 rounded-full bg-cover bg-primary-100"
+                  className="w-10 h-10 rounded-full bg-primary-100 object-cover"
                 />
               </div>
               <div
@@ -233,13 +234,22 @@ function ListParticipants({
               >
                 {participantInShow.name}
               </div>
-              <div className="w-4/12 flex items-center justify-center text-center">
+              <div
+                className={`w-2/12 flex items-center text-center justify-center ${
+                  participantInShow?.sex === "MALE"
+                    ? "text-blue-500"
+                    : "text-pink-500"
+                }`}
+              >
+                {participantInShow?.sex === "MALE" ? "Masculino" : "Feminino"}
+              </div>
+              <div className="w-3/12 flex items-center justify-center text-center">
                 {formatPhone(participantInShow.phone)}
               </div>
-              <div className="w-3/12 flex items-center text-center">
+              <div className="w-2/12 flex items-center text-center justify-center">
                 {participantInShow?.group?.name}
               </div>
-              <div className="w-1/12 flex items-center">
+              <div className="w-1/12 flex items-center justify-center">
                 <EyeIcon
                   className="stroke-primary-600 cursor-pointer"
                   onClick={() => showThisParticipant(participantInShow)}
@@ -283,7 +293,7 @@ function ListParticipants({
 
 function ListParticipantsSkeleton() {
   return (
-    <div className="w-1/2 h-full flex flex-col gap-4">
+    <div className="w-2/3 h-full flex flex-col gap-4">
       <Input
         type="search"
         placeholder="Nome ou Ponto"
@@ -295,8 +305,9 @@ function ListParticipantsSkeleton() {
         <div className="flex gap-2 p-2 bg-gray-50 rounded-md">
           <div className="w-1/12">Foto</div>
           <div className="w-3/12 truncate">Nome</div>
-          <div className="w-4/12 text-center">Telefone</div>
-          <div className="w-3/12 text-center">Grupo</div>
+          <div className="w-2/12 text-center">Gênero</div>
+          <div className="w-3/12 text-center">Telefone</div>
+          <div className="w-2/12 text-center">Grupo</div>
           <div className="w-1/12"></div>
         </div>
         {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((_, index) => (
@@ -315,18 +326,23 @@ function ListParticipantsSkeleton() {
               }ms]`}
             ></div>
             <div
-              className={`w-4/12 bg-primary-100 animate-pulse delay-[${
+              className={`w-2/12 bg-primary-100 animate-pulse delay-[${
                 3 * _ + 150
               }ms]`}
             ></div>
             <div
               className={`w-3/12 bg-primary-100 animate-pulse delay-[${
-                4 * _ + 200
+                3 * _ + 200
+              }ms]`}
+            ></div>
+            <div
+              className={`w-2/12 bg-primary-100 animate-pulse delay-[${
+                4 * _ + 250
               }ms]`}
             ></div>
             <div
               className={`w-1/12 bg-primary-100 animate-pulse delay-[${
-                5 * _ + 250
+                5 * _ + 300
               }ms]`}
             ></div>
           </div>
@@ -435,14 +451,12 @@ function Form({
     setParticipant({ ...participant, group: groupSelected } as Participant);
   };
 
-  const updateGenderForm = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    console.log("value", e.target.value);
-    console.log("id", e.target.id);
+  const updateSelectionForm = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setParticipant(
       (old) =>
         ({
           ...old,
-          sex: e.target.value,
+          [e.target.name]: e.target.value,
         } as Participant)
     );
   };
@@ -467,12 +481,13 @@ function Form({
     <>
       <form
         onSubmit={handleSubmit}
-        className="w-1/2 h-full flex flex-col gap-4"
+        className="w-1/3 h-full flex flex-col gap-4"
       >
         <div className="flex justify-between items-center w-full">
           <p>
             {participant?.id ? "Atualizar" : "Adicionar um novo"} participante{" "}
-            {participant?.name && `(${participant?.name.trim()})`}
+            {participant?.name &&
+              `(${participant?.name.trim().split(" ").slice(0, 2).join(" ")})`}
           </p>
 
           <div className="flex items-center gap-4">
@@ -570,18 +585,33 @@ function Form({
           />
           <FormInput
             label="Email"
-            className="w-full"
+            className="w-3/5 pr-2"
             name="email"
             type="email"
             value={participant?.email}
             onChange={updateForm}
           />
           <FormSelect
+            label="Perfil"
+            className="w-2/5"
+            name="profile"
+            value={participant?.profile}
+            onChange={updateSelectionForm}
+            options={[
+              { id: "COORDINATOR", name: "Coordenador" },
+              { id: "ASSISTANT_COORDINATOR", name: "Assistente Coordenador" },
+              { id: "CAPTAIN", name: "Capitão" },
+              { id: "ASSISTANT_CAPTAIN", name: "Assistente Capitão" },
+              { id: "PARTICIPANT", name: "Participante" },
+              { id: "ADMIN_ANALYST", name: "Analista Administrativo" },
+            ]}
+          />
+          <FormSelect
             label="Sexo"
             className="w-1/2 pr-2"
             name="sex"
             value={participant?.sex}
-            onChange={updateGenderForm}
+            onChange={updateSelectionForm}
             options={[
               { id: "MALE", name: "Masculino" },
               { id: "FEMALE", name: "Feminino" },

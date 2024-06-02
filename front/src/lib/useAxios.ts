@@ -18,7 +18,7 @@ export const useHttp = (type: 'login' | 'crud' = 'crud') => {
       return response;
     },
     (error) => {
-      if (error.response.status === 401) {
+      if (error.response?.status === 401) {
         cookie.erase("token");
       }
       return Promise.reject(error);
