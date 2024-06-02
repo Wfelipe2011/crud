@@ -560,6 +560,7 @@ function Form({
               handleDeleteImage={removeImage}
               setImage={updateImage}
               className={`${!participant?.id ? "pointer-events-none" : ""}`}
+              participantId={participant?.id || ""}
             />
           </div>
           <FormInput

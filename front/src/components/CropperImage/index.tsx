@@ -14,6 +14,7 @@ export function UploadImage({
   setImage: uploadImage,
   className = "",
   handleDeleteImage,
+  participantId,
 }) {
   const axios = useHttp();
 
@@ -29,13 +30,17 @@ export function UploadImage({
 
   useEffect(() => {
     if (img) {
+      createFile("image").then((res) => {
+        if (!res) {
+          setImage(null);
+          setSrc("");
+          return console.log("erro ao criar arquivo");
+        }
+        setImage(res);
+        setSrc(URL?.createObjectURL(res));
+      });
       setImagemOfClient(img);
       setViewImage(img);
-      setSrc(img);
-      createFile(img, "image").then((res) => {
-        console.log(res);
-        setImage(res);
-      });
     } else {
       setImagemOfClient(image_placeholder);
       setViewImage(image_placeholder);
@@ -48,12 +53,12 @@ export function UploadImage({
   }, [img]);
 
   // url is https://participants-photo.s3.amazonaws.com/12981829844.jpg
-  const createFile = async (url: string, filename: string) => {
+  const createFile = async (filename: string) => {
+    if (!participantId) return;
     try {
-      const response = await axios.get(url, {
+      const response = await axios.get(`/participants/${participantId}/photo`, {
         responseType: "blob",
       });
-      console.log("response", response);
       const file = new File([response.data], filename, {
         type: response.headers["content-type"],
       });
@@ -268,7 +273,7 @@ export function UploadImage({
             {imagemOfClient ? (
               <label className={`input-type-file cursor-pointer ${className}`}>
                 <img
-                  src={viewImage || imagemOfClient}
+                  src={viewImage || imagemOfClient + `?stubby=${Math.random()}`}
                   onClick={handleStateModal}
                   width="160px"
                   height="160px"
