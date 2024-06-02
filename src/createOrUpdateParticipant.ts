@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { prisma } from "./prismaClient";
+import { LoginUtils } from "./createParticipantWithGroup";
 
 export class ParticipantUtils {
   static calculateComputedField({ name, phone }: { name: string; phone: string }) {
@@ -37,7 +38,23 @@ export const createOrUpdateParticipant = async (req: Request, res: Response) => 
         });
       } else {
         const { groupId, ...data } = body;
-        const participant = await txt.participants.create({ data });
+        const participant = await txt.participants.create({
+          data: {
+            computed: data.computed,
+            name: data.name,
+            phone: data.phone,
+            profile: data.profile,
+            sex: data.sex,
+            profile_photo: data.profile_photo,
+            email: data?.email || "",
+            cpf: data?.cpf || "",
+            Auth: {
+              create: {
+                password: LoginUtils.encryptPassword("123456"),
+              },
+            },
+          },
+        });
         participantId = participant.id;
         await txt.participantsGroups.create({
           data: {
