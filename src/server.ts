@@ -7,7 +7,7 @@ import { middleware } from "./middleware";
 import { getParticipants } from "./getParticipants";
 import { createOrUpdateParticipant } from "./createOrUpdateParticipant";
 
-import { S3Client } from "@aws-sdk/client-s3";
+import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import multer from "multer";
 import multerS3 from "multer-s3";
 import { prisma } from "./prismaClient";
@@ -22,6 +22,43 @@ app.use(bodyParser.json());
 app.get("/participants", middleware, getParticipants);
 app.post("/participants", middleware, createOrUpdateParticipant);
 app.post("/participants-groups", createParticipantWithGroup);
+
+// get image buffer s3
+app.get("/participants/:id/photo", async (req, res) => {
+  const participant = await prisma.participants.findUnique({
+    where: {
+      id: req.params.id,
+    },
+  });
+
+  if (!participant) {
+    res.status(404).send({ error: "Participant not found" });
+    return;
+  }
+
+  if (!participant.profile_photo) {
+    res.status(404).send({ error: "Photo not found" });
+    return;
+  }
+
+  const s3 = new S3Client({
+    region: "us-east-1",
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+    },
+  });
+  const key = participant.profile_photo.replace("https://participants-photo.s3.amazonaws.com/", "");
+
+  res.attachment(key);
+  const data = await s3.send(
+    new GetObjectCommand({
+      Bucket: "participants-photo",
+      Key: key,
+    })
+  );
+  (data.Body as any).pipe(res);
+});
 
 app.get("/*", (req, res) => {
   res.sendFile("index.html", { root: "front/dist" });
