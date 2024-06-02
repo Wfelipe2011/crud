@@ -11,23 +11,21 @@ import { S3Client } from "@aws-sdk/client-s3";
 import multer from "multer";
 import multerS3 from "multer-s3";
 import { prisma } from "./prismaClient";
+import { createParticipantWithGroup } from "./createParticipantWithGroup";
 
 const app = express();
 
-app.use(
-  cors()
-);
+app.use(cors());
 app.use(express.static("front/dist"));
 app.use(bodyParser.json());
 
-
 app.get("/participants", middleware, getParticipants);
 app.post("/participants", middleware, createOrUpdateParticipant);
+app.post("/participants-groups", createParticipantWithGroup);
 
 app.get("/*", (req, res) => {
   res.sendFile("index.html", { root: "front/dist" });
 });
-
 
 const s3 = new S3Client({
   region: "us-east-1",
@@ -46,7 +44,7 @@ const upload = multer({
       cb(null, { fieldName: file.fieldname });
     },
     key: async function (req: Request, file, cb) {
-      console.log({file})
+      console.log({ file });
       if (!req.params["id"]) {
         cb(new Error("No id provided"));
         return;
