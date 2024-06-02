@@ -11,7 +11,7 @@ import { S3Client } from "@aws-sdk/client-s3";
 import multer from "multer";
 import multerS3 from "multer-s3";
 import { prisma } from "./prismaClient";
-import { createParticipantWithGroup } from "createParticipantWithGroup";
+import { createParticipantWithGroup } from "./createParticipantWithGroup";
 
 const app = express();
 
