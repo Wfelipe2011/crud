@@ -5,8 +5,9 @@ import { ModalPopUp } from "../ModalPopUp";
 import toast, { Toaster } from "react-hot-toast";
 import "react-image-crop/dist/ReactCrop.css";
 import "./index.css";
-import { ImageIcon, SaveIcon, TrashIcon } from "lucide-react";
 import React from "react";
+import { useHttp } from "../../lib";
+import { AxiosError } from "axios";
 
 export function UploadImage({
   img = image_placeholder,
@@ -14,10 +15,12 @@ export function UploadImage({
   className = "",
   handleDeleteImage,
 }) {
+  const axios = useHttp();
+
   const [imagemOfClient, setImagemOfClient] = useState(img);
   const [image, setImage] = useState<any>(null);
   const [viewImage, setViewImage] = useState("");
-  const [src, setSrc] = useState("");
+  const [src, setSrc] = useState(img);
   const [modalEdit, setModalEdit] = useState(false);
   const [statusModal, setStatusModal] = useState(false);
   const [result, setResult] = useState(null);
@@ -28,16 +31,46 @@ export function UploadImage({
     if (img) {
       setImagemOfClient(img);
       setViewImage(img);
+      setSrc(img);
+      createFile(img, "image").then((res) => {
+        console.log(res);
+        setImage(res);
+      });
     } else {
       setImagemOfClient(image_placeholder);
       setViewImage(image_placeholder);
+      setSrc("");
+      setImage(null);
     }
-    setSrc("");
-    setImage(null);
     setResult(null);
     setCrop({ aspect: 9 / 9 });
     setClickDeleteImage(false);
   }, [img]);
+
+  // url is https://participants-photo.s3.amazonaws.com/12981829844.jpg
+  const createFile = async (url: string, filename: string) => {
+    try {
+      const response = await axios.get(url, {
+        responseType: "blob",
+      });
+      console.log("response", response);
+      const file = new File([response.data], filename, {
+        type: response.headers["content-type"],
+      });
+      return file;
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        console.log(
+          "erro no axios familia",
+          error.status,
+          error.code,
+          error.message
+        );
+      } else {
+        console.log("erro nao é axios familia", error);
+      }
+    }
+  };
 
   const handleFileChange = (e: any) => {
     if (!e?.target?.files[0]) return;
@@ -150,16 +183,7 @@ export function UploadImage({
         status={statusModal}
         onClickCancel={handleStateModal}
       >
-        {imagemOfClient && !src ? (
-          <div className="flex justify-center">
-            <img
-              src={imagemOfClient + `?stubby=${Math.random()}`}
-              className=""
-              width="150px"
-              height="150px"
-            />
-          </div>
-        ) : src ? (
+        {src ? (
           <div className="w-full flex justify-around mx-2">
             <div
               onTouchMoveCapture={getCroppedImg}
