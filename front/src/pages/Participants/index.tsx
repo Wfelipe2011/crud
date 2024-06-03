@@ -49,6 +49,28 @@ interface GetMethodResponse {
   pages: Page;
 }
 
+const PARTICIPANT_CLEAN = {
+  id: "",
+  name: "",
+  cpf: "",
+  email: "",
+  phone: "",
+  profile_photo: "",
+  profile: "",
+  computed: "",
+  group: {
+    id: "",
+    name: "",
+    config_max: 0,
+    config_min: 0,
+    config_start_hour: "",
+    config_end_hour: "",
+    config_weekday: "",
+    coordinatorId: "",
+  },
+  sex: "",
+}
+
 export function Participants() {
   const http = useHttp();
 
@@ -90,35 +112,29 @@ export function Participants() {
     await getParticipants();
   };
 
+  function deepAssign(obj1, obj2) {
+    for (const key in obj1) {
+      if (typeof key === 'object') {
+        for (const key2 in obj1[key]) {
+          obj1[key][key2] = obj2[key][key2]
+        }
+      } else {
+        obj1[key] = obj2[key]
+      }
+    }
+  }
+
   const showThisParticipant = (participantSelected: Participant) => {
     if (
       participantSelected.id === participant?.id ||
       participantSelected.computed === participant?.computed
     ) {
-      setParticipant({
-        id: "",
-        name: "",
-        cpf: "",
-        email: "",
-        phone: "",
-        profile_photo: "",
-        profile: "",
-        computed: "",
-        group: {
-          id: "",
-          name: "",
-          config_max: 0,
-          config_min: 0,
-          config_start_hour: "",
-          config_end_hour: "",
-          config_weekday: "",
-          coordinatorId: "",
-        },
-        sex: "",
-      });
+      setParticipant(PARTICIPANT_CLEAN);
       return;
     }
-    setParticipant(participantSelected);
+    setParticipant((old) => {
+      return {...participantSelected}
+    });
   };
 
   return (
@@ -217,6 +233,7 @@ function ListParticipants({
                   ? "bg-primary-300"
                   : "bg-gray-50"
               } rounded-md`}
+              key={participantInShow.id}
             >
               <div className="w-1/12">
                 <img
@@ -244,7 +261,7 @@ function ListParticipants({
                 {participantInShow?.sex === "MALE" ? "Masculino" : "Feminino"}
               </div>
               <div className="w-3/12 flex items-center justify-center text-center">
-                {formatPhone(participantInShow.phone)}
+                {formatPhone(participantInShow?.phone || "")}
               </div>
               <div className="w-3/12 flex items-center text-center justify-center">
                 {participantInShow?.group?.name}
@@ -477,7 +494,6 @@ function Form({
     setParticipant((old) => ({ ...old, profile_photo: "" } as Participant));
   };
 
-  console.log("participant", participant);
   return (
     <>
       <form
@@ -495,27 +511,7 @@ function Form({
             <Button
               type="button"
               onClick={() => {
-                setParticipant({
-                  id: "",
-                  name: "",
-                  cpf: "",
-                  email: "",
-                  phone: "",
-                  profile_photo: "",
-                  profile: "",
-                  computed: "",
-                  group: {
-                    id: "",
-                    name: "",
-                    config_max: 0,
-                    config_min: 0,
-                    config_start_hour: "",
-                    config_end_hour: "",
-                    config_weekday: "",
-                    coordinatorId: "",
-                  },
-                  sex: "",
-                });
+                setParticipant(PARTICIPANT_CLEAN);
               }}
               className="bg-white border border-primary-500 text-primary-500"
               placeholder="Limpar"
