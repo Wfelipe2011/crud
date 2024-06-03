@@ -71,6 +71,22 @@ const PARTICIPANT_CLEAN = {
   sex: "",
 }
 
+const SORT_WEEK_DAYS = [
+  'segunda-feira',
+  'terça-feira',
+  'quarta-feira',
+  'quinta-feira',
+  'sexta-feira',
+  'sábado',
+  'domingo'
+]
+
+const sortWeekDays = (weekdays) => {
+  return weekdays.sort((a, b) => {
+      return SORT_WEEK_DAYS.indexOf(a.name.split(' ')[0].toLowerCase()) - SORT_WEEK_DAYS.indexOf(b.name.split(' ')[0].toLowerCase())
+  })
+}
+
 export function Participants() {
   const http = useHttp();
 
@@ -149,7 +165,7 @@ export function Participants() {
           loading={loading}
           showThisParticipant={showThisParticipant}
           getParticipants={getParticipants}
-          handleFilter={handleFilter}
+          handleFilter={handleFilter}dj
         />
         <Form
           participant={participant}
@@ -621,7 +637,7 @@ function Form({
             name="group"
             value={participant?.group?.id}
             onChange={updateGroupForm}
-            options={group}
+            options={sortWeekDays(group)}
           />
         </div>
       </form>
