@@ -165,7 +165,7 @@ export function Participants() {
           loading={loading}
           showThisParticipant={showThisParticipant}
           getParticipants={getParticipants}
-          handleFilter={handleFilter}dj
+          handleFilter={handleFilter}
         />
         <Form
           participant={participant}
@@ -174,6 +174,7 @@ export function Participants() {
           setParticipant={setParticipant}
           getParticipants={getParticipants}
           group={group}
+          currentPage={page.current}
         />
       </div>
     </div>
@@ -400,8 +401,9 @@ interface FormProps {
   loading: boolean;
   setLoading: (loading: boolean) => void;
   setParticipant: Dispatch<SetStateAction<Participant | null>>;
-  getParticipants: () => Promise<void>;
+  getParticipants: (currentPage: number) => Promise<void>;
   group: Group[];
+  currentPage: number;
 }
 
 function Form({
@@ -411,6 +413,7 @@ function Form({
   setParticipant,
   getParticipants,
   group,
+  currentPage,
 }: FormProps) {
   const http = useHttp();
 
@@ -468,7 +471,7 @@ function Form({
       //   },
       //   sex: "",
       // });
-      await getParticipants();
+      await getParticipants(currentPage);
     } catch (error) {
       console.error(error);
       toast.error(
@@ -503,7 +506,7 @@ function Form({
       },
     });
 
-    getParticipants();
+    getParticipants(currentPage);
   };
 
   const removeImage = () => {
