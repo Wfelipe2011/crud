@@ -49,6 +49,44 @@ interface GetMethodResponse {
   pages: Page;
 }
 
+const PARTICIPANT_CLEAN = {
+  id: "",
+  name: "",
+  cpf: "",
+  email: "",
+  phone: "",
+  profile_photo: "",
+  profile: "",
+  computed: "",
+  group: {
+    id: "",
+    name: "",
+    config_max: 0,
+    config_min: 0,
+    config_start_hour: "",
+    config_end_hour: "",
+    config_weekday: "",
+    coordinatorId: "",
+  },
+  sex: "",
+}
+
+const SORT_WEEK_DAYS = [
+  'segunda-feira',
+  'terça-feira',
+  'quarta-feira',
+  'quinta-feira',
+  'sexta-feira',
+  'sábado',
+  'domingo'
+]
+
+const sortWeekDays = (weekdays) => {
+  return weekdays.sort((a, b) => {
+      return SORT_WEEK_DAYS.indexOf(a.name.split(' ')[0].toLowerCase()) - SORT_WEEK_DAYS.indexOf(b.name.split(' ')[0].toLowerCase())
+  })
+}
+
 export function Participants() {
   const http = useHttp();
 
@@ -90,35 +128,29 @@ export function Participants() {
     await getParticipants();
   };
 
+  function deepAssign(obj1, obj2) {
+    for (const key in obj1) {
+      if (typeof key === 'object') {
+        for (const key2 in obj1[key]) {
+          obj1[key][key2] = obj2[key][key2]
+        }
+      } else {
+        obj1[key] = obj2[key]
+      }
+    }
+  }
+
   const showThisParticipant = (participantSelected: Participant) => {
     if (
       participantSelected.id === participant?.id ||
       participantSelected.computed === participant?.computed
     ) {
-      setParticipant({
-        id: "",
-        name: "",
-        cpf: "",
-        email: "",
-        phone: "",
-        profile_photo: "",
-        profile: "",
-        computed: "",
-        group: {
-          id: "",
-          name: "",
-          config_max: 0,
-          config_min: 0,
-          config_start_hour: "",
-          config_end_hour: "",
-          config_weekday: "",
-          coordinatorId: "",
-        },
-        sex: "",
-      });
+      setParticipant(PARTICIPANT_CLEAN);
       return;
     }
-    setParticipant(participantSelected);
+    setParticipant((old) => {
+      return {...participantSelected}
+    });
   };
 
   return (
@@ -142,6 +174,7 @@ export function Participants() {
           setParticipant={setParticipant}
           getParticipants={getParticipants}
           group={group}
+          currentPage={page.current}
         />
       </div>
     </div>
@@ -217,6 +250,7 @@ function ListParticipants({
                   ? "bg-primary-300"
                   : "bg-gray-50"
               } rounded-md`}
+              key={participantInShow.id}
             >
               <div className="w-1/12">
                 <img
@@ -244,7 +278,7 @@ function ListParticipants({
                 {participantInShow?.sex === "MALE" ? "Masculino" : "Feminino"}
               </div>
               <div className="w-3/12 flex items-center justify-center text-center">
-                {formatPhone(participantInShow.phone)}
+                {formatPhone(participantInShow?.phone || "")}
               </div>
               <div className="w-3/12 flex items-center text-center justify-center">
                 {participantInShow?.group?.name}
@@ -367,8 +401,9 @@ interface FormProps {
   loading: boolean;
   setLoading: (loading: boolean) => void;
   setParticipant: Dispatch<SetStateAction<Participant | null>>;
-  getParticipants: () => Promise<void>;
+  getParticipants: (currentPage: number) => Promise<void>;
   group: Group[];
+  currentPage: number;
 }
 
 function Form({
@@ -378,6 +413,7 @@ function Form({
   setParticipant,
   getParticipants,
   group,
+  currentPage,
 }: FormProps) {
   const http = useHttp();
 
@@ -399,8 +435,8 @@ function Form({
         "/participants",
         {
           ...participantWithoutGroup,
-          cpf: participantWithoutGroup.cpf.replace(/\D/g, "").trim(),
-          phone: participantWithoutGroup.phone.replace(/\D/g, "").trim(),
+          cpf: participantWithoutGroup?.cpf?.replace(/\D/g, "").trim(),
+          phone: participantWithoutGroup?.phone?.replace(/\D/g, "").trim(),
           ...(groupId && { groupId }),
         }
       );
@@ -435,7 +471,7 @@ function Form({
       //   },
       //   sex: "",
       // });
-      await getParticipants();
+      await getParticipants(currentPage);
     } catch (error) {
       console.error(error);
       toast.error(
@@ -470,7 +506,7 @@ function Form({
       },
     });
 
-    getParticipants();
+    getParticipants(currentPage);
   };
 
   const removeImage = () => {
@@ -494,27 +530,7 @@ function Form({
             <Button
               type="button"
               onClick={() => {
-                setParticipant({
-                  id: "",
-                  name: "",
-                  cpf: "",
-                  email: "",
-                  phone: "",
-                  profile_photo: "",
-                  profile: "",
-                  computed: "",
-                  group: {
-                    id: "",
-                    name: "",
-                    config_max: 0,
-                    config_min: 0,
-                    config_start_hour: "",
-                    config_end_hour: "",
-                    config_weekday: "",
-                    coordinatorId: "",
-                  },
-                  sex: "",
-                });
+                setParticipant(PARTICIPANT_CLEAN);
               }}
               className="bg-white border border-primary-500 text-primary-500"
               placeholder="Limpar"
@@ -624,7 +640,7 @@ function Form({
             name="group"
             value={participant?.group?.id}
             onChange={updateGroupForm}
-            options={group}
+            options={sortWeekDays(group)}
           />
         </div>
       </form>

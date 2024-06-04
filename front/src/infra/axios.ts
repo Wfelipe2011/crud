@@ -8,7 +8,7 @@ export const http = axios.create({
 });
 
 export const httpLogin = axios.create({
-  baseURL: "https://api.tpedigital.com.br/dev",
+  baseURL: "https://api.tpedigital.com.br/hmg",
   timeout,
 });
 
